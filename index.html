@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>(function(){var t="dark";try{t=localStorage.getItem("mern-theme")||"dark"}catch(e){}document.documentElement.setAttribute("data-theme",t)})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MERN Stack Explained</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Lexend:wght@300;400;600;700&family=Fira+Code:wght@400;600&display=swap">
+<style>
+/* Layout concept: a browser window opens the page and the site is "built" in front of the reader, layer by layer: how the web works → HTML/CSS/JS → the four MERN parts → the learning road. */
+:root{
+  --bg:#FBFBFD; --panel:#FFFFFF; --ink:#141625; --muted:#5B5F75; --rule:#DFE1EA; --soft:#EEF0F6;
+  --hi:#F5A524; --hot:#E5484D;
+  --m:#00845A; --e:#41455A; --r:#0A9CC0; --n:#5E9E1B;
+  --display:"Unbounded", "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --body:"Lexend", "Segoe UI", system-ui, sans-serif;
+  --mono:"Fira Code", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E0F18; --panel:#161825; --ink:#ECEDF5; --muted:#A0A3B8; --rule:#2A2D40; --soft:#1F2232;
+  --hi:#FFB940; --hot:#FF6B70;
+  --m:#2FC48A; --e:#B3B7CC; --r:#3FC5E6; --n:#9AD04F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E0F18; --panel:#161825; --ink:#ECEDF5; --muted:#A0A3B8; --rule:#2A2D40; --soft:#1F2232;
+  --hi:#FFB940; --hot:#FF6B70;
+  --m:#2FC48A; --e:#B3B7CC; --r:#3FC5E6; --n:#9AD04F; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.65;font-weight:400}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1;letter-spacing:-.01em}
+h1{font-size:clamp(34px,5.4vw,64px);font-weight:800}
+h2{font-size:clamp(26px,3.6vw,42px);font-weight:700}
+h3{font-size:19px;font-weight:700}
+p{margin:0}
+a{color:var(--r)}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lede{max-width:62ch;color:var(--muted);font-size:18px;font-weight:300}
+section{padding-block:80px;border-top:1px solid var(--rule)}
+.sec-head{display:grid;gap:14px;margin-bottom:40px}
+:focus-visible{outline:3px solid var(--hi);outline-offset:2px;border-radius:6px}
+.hl{background:linear-gradient(transparent 62%,color-mix(in srgb,var(--hi) 55%,transparent) 62%);padding:0 .08em}
+code{font-family:var(--mono);font-size:.86em;background:var(--soft);padding:1px 6px;border-radius:5px}
+
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+nav.top .wrap{display:flex;align-items:center;gap:18px;height:58px;overflow-x:auto;scrollbar-width:none}
+.logo{font-family:var(--display);font-weight:800;font-size:15px;display:flex;align-items:center;gap:2px;white-space:nowrap}
+.logo b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;color:var(--panel);font-size:12px}
+.logo span{margin-left:8px}
+nav.top .links{display:flex;gap:4px;margin-left:auto}
+nav.top a.l{color:var(--muted);text-decoration:none;font-size:14px;padding:6px 10px;border-radius:99px;white-space:nowrap}
+nav.top a.l:hover{background:var(--soft);color:var(--ink)}
+
+/* hero */
+.hero{border-top:none;padding-block:60px 72px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.hero-grid > *{min-width:0}
+.hero .lede{margin-top:22px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.pills span{font-family:var(--mono);font-size:13px;padding:6px 12px;border-radius:99px;border:1.5px solid var(--c);color:var(--c);font-weight:600}
+
+.browser{background:var(--panel);border:1px solid var(--rule);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px -30px color-mix(in srgb,var(--ink) 35%,transparent)}
+.bbar{display:flex;align-items:center;gap:6px;padding:10px 12px;background:var(--soft);border-bottom:1px solid var(--rule)}
+.bbar i{width:11px;height:11px;border-radius:50%;background:var(--rule)}
+.bbar i:nth-child(1){background:var(--hot)}.bbar i:nth-child(2){background:var(--hi)}.bbar i:nth-child(3){background:var(--n)}
+.url{margin-left:10px;flex:1;min-width:0;background:var(--panel);border-radius:8px;padding:4px 10px;font-family:var(--mono);font-size:13px;color:var(--ink);display:flex;align-items:center;gap:6px;overflow:hidden}
+.url .typed{display:inline-block;overflow:hidden;white-space:nowrap;width:13ch;border-right:2px solid var(--ink);animation:type 10s steps(13) infinite}
+@keyframes type{0%{width:0}14%,100%{width:13ch}}
+.loadbar{height:3px;background:var(--r);transform-origin:left;animation:load 10s infinite}
+@keyframes load{0%,15%{transform:scaleX(0);opacity:1}24%{transform:scaleX(1);opacity:1}26%,100%{transform:scaleX(1);opacity:0}}
+.bpage{padding:18px;display:grid;gap:10px;min-height:290px;position:relative}
+.blk{border-radius:8px;border:1.5px dashed var(--rule);animation:blk 10s infinite}
+@keyframes blk{0%,24%{transform:translateY(-10px);border-color:var(--rule);background:transparent}30%,46%{transform:none;border-color:var(--muted);background:transparent}52%,100%{transform:none;border-style:solid;border-color:transparent;background:var(--bc)}}
+.blk.nav{height:30px;--bc:var(--ink);animation-delay:0s}
+.blk.hero2{height:84px;--bc:color-mix(in srgb,var(--r) 22%,var(--panel))}
+.brow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.blk.card{height:74px;--bc:var(--soft)}
+.btnx{justify-self:start;height:34px;width:130px;border-radius:99px;--bc:var(--hi);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:600;color:transparent;animation:blk 10s infinite,btnpulse 10s infinite}
+@keyframes btnpulse{0%,62%{box-shadow:none;color:transparent}66%{box-shadow:0 0 0 0 color-mix(in srgb,var(--hi) 70%,transparent);color:var(--ink)}76%{box-shadow:0 0 0 12px transparent;color:var(--ink)}100%{color:var(--ink)}}
+.stage{position:absolute;right:14px;bottom:12px;display:flex;gap:6px}
+.stage span{font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--soft);color:var(--muted);animation:st 10s infinite}
+.stage span:nth-child(1){animation-name:st1}.stage span:nth-child(2){animation-name:st2}.stage span:nth-child(3){animation-name:st3}
+@keyframes st1{0%,25%{background:var(--soft);color:var(--muted)}28%,100%{background:var(--hot);color:var(--panel)}}
+@keyframes st2{0%,48%{background:var(--soft);color:var(--muted)}52%,100%{background:var(--r);color:var(--panel)}}
+@keyframes st3{0%,62%{background:var(--soft);color:var(--muted)}66%,100%{background:var(--hi);color:#141625}}
+.hero-cap{margin-top:12px;font-size:14px;color:var(--muted);text-align:center}
+
+/* how web works */
+.web{background:var(--panel);border:1px solid var(--rule);border-radius:20px;padding:20px;display:grid;gap:18px}
+.web-scroll{overflow-x:auto}
+.web svg{display:block;min-width:600px;width:100%;height:auto}
+.web text{font-family:var(--body);fill:var(--ink)}
+.node{fill:var(--bg);stroke:var(--rule);stroke-width:2;transition:stroke .3s,fill .3s}
+.node.on{stroke:var(--hi);fill:color-mix(in srgb,var(--hi) 14%,var(--bg))}
+.nlabel{font-family:var(--display)!important;font-size:14px;font-weight:700}
+.nsub{font-family:var(--mono)!important;font-size:11px;fill:var(--muted)!important}
+.wire{stroke:var(--rule);stroke-width:2.5;fill:none;stroke-dasharray:2 6;stroke-linecap:round}
+#packet{transition:transform .8s cubic-bezier(.45,.05,.25,1)}
+.wstep{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center}
+.wstep h3{font-size:22px}
+.wstep p{color:var(--muted);margin-top:6px}
+.wcode{font-family:var(--mono);font-size:13px;background:var(--soft);border-radius:8px;padding:8px 12px;margin-top:10px;display:inline-block;max-width:100%;overflow-x:auto;white-space:pre}
+.ctrl{display:flex;gap:6px;align-items:center}
+.btn{font:inherit;font-size:14px;font-weight:600;padding:8px 16px;border-radius:99px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--rule);background:var(--bg);color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer}
+.dots button[aria-current="step"]{background:var(--hi);border-color:var(--hi);color:#141625;font-weight:600}
+
+.terms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:28px}
+.term{border:1px solid var(--rule);border-radius:14px;padding:18px;background:var(--panel);display:grid;gap:6px;align-content:start}
+.term b{font-family:var(--display);font-size:15px}
+.term span{font-size:15px;color:var(--muted)}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:28px;border-radius:20px;overflow:hidden;border:1px solid var(--rule)}
+.split > div{padding:26px;display:grid;gap:12px;align-content:start;min-width:0}
+.split .fe{background:color-mix(in srgb,var(--r) 10%,var(--panel))}
+.split .be{background:color-mix(in srgb,var(--m) 10%,var(--panel))}
+.split ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.split .who{font-family:var(--mono);font-size:12.5px;font-weight:600}
+
+/* layers demo */
+.layers{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.lbtns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.lbtns button{font:inherit;font-weight:600;font-size:15px;padding:9px 16px;border-radius:12px;border:1.5px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer;display:flex;gap:8px;align-items:center}
+.lbtns button i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.lbtns button[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--panel))}
+.lexplain{display:grid;gap:10px}
+.lexplain p{color:var(--muted)}
+pre.code{margin:0;font-family:var(--mono);font-size:13px;line-height:1.6;background:var(--soft);border-radius:12px;padding:14px 16px;overflow-x:auto;color:var(--ink)}
+pre.code .t{color:var(--hot)} pre.code .a{color:var(--r)} pre.code .s{color:var(--m)} pre.code .c{color:var(--muted)}
+.demo{background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:28px;display:grid;place-items:center;min-height:330px}
+/* raw HTML look */
+.pcard{font-family:"Times New Roman",Times,serif;color:#000;background:#fff;width:100%;max-width:300px;padding:4px;transition:all .45s}
+.pcard h4{margin:8px 0;font-size:20px}
+.pcard .img{height:0;transition:height .45s}
+.pcard p{margin:6px 0;font-size:16px}
+.pcard .row{display:block}
+.pcard button{font:13px Arial,sans-serif}
+.pcard .heart{display:none}
+/* with CSS */
+.demo.css .pcard{font-family:var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:16px;padding:16px;box-shadow:0 18px 40px -24px color-mix(in srgb,var(--ink) 40%,transparent)}
+.demo.css .pcard .img{height:120px;border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--r) 45%,var(--panel)),color-mix(in srgb,var(--hi) 45%,var(--panel)));position:relative}
+.demo.css .pcard h4{font-family:var(--display);font-size:17px;margin:12px 0 2px}
+.demo.css .pcard p{color:var(--muted);font-size:14px;margin:0}
+.demo.css .pcard .row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.demo.css .pcard .price{font-family:var(--display);font-size:18px;color:var(--ink)}
+.demo.css .pcard button{font:600 14px var(--body);border:0;border-radius:99px;padding:9px 14px;background:var(--ink);color:var(--bg);cursor:pointer;transition:transform .15s}
+.demo.css .pcard button:active{transform:scale(.95)}
+.demo.css .pcard .heart{display:grid;place-items:center;position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:var(--panel);border:0;padding:0;font-size:16px;color:var(--muted)}
+.demo .heart.on{color:var(--hot)!important;animation:pop .3s}
+@keyframes pop{50%{transform:scale(1.3)}}
+.cartmsg{font-family:var(--mono);font-size:12.5px;margin-top:10px;min-height:20px;color:var(--m)}
+
+/* MERN explorer */
+.explorer{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.xbtn{font:inherit;color:var(--ink);text-align:left;background:var(--panel);border:1.5px solid var(--rule);border-radius:16px;padding:18px;cursor:pointer;display:grid;gap:4px;transition:transform .25s,border-color .25s,background .25s;position:relative;overflow:hidden}
+.xbtn .L{font-family:var(--display);font-weight:800;font-size:58px;line-height:1;color:var(--c);transition:transform .35s}
+.xbtn:hover .L{transform:translateY(-4px) rotate(-4deg)}
+.xbtn b{font-family:var(--display);font-size:16px}
+.xbtn span{font-size:13.5px;color:var(--muted)}
+.xbtn[aria-selected="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,var(--panel));transform:translateY(-4px)}
+.xbtn::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--c);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.xbtn[aria-selected="true"]::after{transform:scaleX(1)}
+.xpanel{background:var(--panel);border:1px solid var(--rule);border-radius:20px;padding:28px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;animation:rise .4s ease}
+@keyframes rise{from{transform:translateY(10px)}to{transform:none}}
+.xpanel > div{display:grid;gap:18px;align-content:start;min-width:0}
+.xpanel h4{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+.xpanel .what{font-size:19px;line-height:1.55}
+.xpanel ul.learn{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.xpanel ul.learn li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;font-size:15.5px}
+.xpanel ul.learn li::before{content:"";width:10px;height:10px;margin-top:8px;border-radius:3px;background:var(--c)}
+.xpanel ul.learn b{font-weight:600}
+.xpanel ul.learn span{color:var(--muted)}
+.analogy{border-left:4px solid var(--c);padding:6px 0 6px 14px;font-size:15.5px}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.fact{font-family:var(--mono);font-size:12.5px;padding:4px 10px;border-radius:99px;border:1px solid var(--rule)}
+
+/* together diagram */
+.together{background:var(--panel);border:1px solid var(--rule);border-radius:20px;padding:20px}
+.tg-scroll{overflow-x:auto}
+.together svg{display:block;min-width:720px;width:100%;height:auto}
+.together text{font-family:var(--body);fill:var(--ink)}
+.tbox{fill:var(--bg);stroke-width:2.5}
+.tl{font-family:var(--display)!important;font-size:16px;font-weight:700}
+.ts{font-family:var(--mono)!important;font-size:11.5px;fill:var(--muted)!important}
+.flow{fill:none;stroke-width:2.5;stroke-dasharray:8 8;animation:dash 1.1s linear infinite}
+.flow.back{animation-direction:reverse}
+@keyframes dash{to{stroke-dashoffset:-16}}
+.zone{fill:none;stroke:var(--rule);stroke-width:1.5;stroke-dasharray:4 6}
+.zt{font-family:var(--mono)!important;font-size:11px;fill:var(--muted)!important;letter-spacing:.1em}
+
+/* CRUD */
+.crud{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:24px;margin-top:44px;align-items:start}
+.cbtns{display:grid;gap:8px}
+.cbtns button{font:inherit;text-align:left;color:var(--ink);background:var(--panel);border:1.5px solid var(--rule);border-radius:14px;padding:14px 16px;cursor:pointer;display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:center}
+.cbtns button .verb{font-family:var(--mono);font-size:12.5px;font-weight:600;padding:4px 0;border-radius:8px;text-align:center;color:var(--panel);background:var(--c)}
+.cbtns button b{font-family:var(--display);font-size:15px}
+.cbtns button span.d{display:block;font-size:13.5px;color:var(--muted)}
+.cbtns button[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,var(--panel))}
+.chain{display:grid;gap:10px}
+.link{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px;align-items:center;animation:rise .4s both}
+.link:nth-child(2){animation-delay:.08s}.link:nth-child(3){animation-delay:.16s}.link:nth-child(4){animation-delay:.24s}
+.link .who{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--c)}
+.link code{background:var(--soft);display:block;padding:8px 10px;border-radius:8px;overflow-x:auto;white-space:pre;font-size:12.5px}
+.arrow{justify-self:center;color:var(--muted);font-size:14px;line-height:1}
+
+/* roadmap */
+.road{position:relative;display:grid;gap:18px;padding-left:56px}
+.road::before{content:"";position:absolute;left:21px;top:10px;bottom:10px;width:4px;border-radius:4px;background:var(--soft)}
+.road::after{content:"";position:absolute;left:21px;top:10px;width:4px;border-radius:4px;height:calc(100% - 20px);background:linear-gradient(var(--hot),var(--hi),var(--r),var(--m));transform-origin:top}
+@supports (animation-timeline: view()){
+  .road::after{animation:fill linear both;animation-timeline:view();animation-range:entry 20% exit 60%}
+  @keyframes fill{from{transform:scaleY(.04)}to{transform:scaleY(1)}}
+}
+.stop{position:relative;background:var(--panel);border:1px solid var(--rule);border-radius:18px;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+.stop::before{content:attr(data-n);position:absolute;left:-56px;top:18px;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:3px solid var(--c);font-family:var(--display);font-weight:800;font-size:15px;z-index:1}
+.stop > div{display:grid;gap:10px;align-content:start;min-width:0}
+.stop .tag{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--c);letter-spacing:.06em;text-transform:uppercase}
+.stop p{color:var(--muted);font-size:15.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12.5px;padding:4px 10px;border-radius:8px;background:var(--soft)}
+.cando{background:color-mix(in srgb,var(--c) 9%,var(--panel));border-radius:12px;padding:14px;font-size:15px}
+.cando b{display:block;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--c);margin-bottom:4px}
+
+/* tools & careers */
+.tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tool{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start;background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px;transition:transform .2s}
+.tool:hover{transform:translateY(-3px)}
+.tool .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,var(--panel));color:var(--c);font-family:var(--mono);font-weight:600;font-size:13px}
+.tool b{font-family:var(--display);font-size:15px}
+.tool span{display:block;font-size:14.5px;color:var(--muted)}
+.build{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+.bcard{border-radius:16px;padding:20px;background:color-mix(in srgb,var(--c) 11%,var(--panel));border:1px solid color-mix(in srgb,var(--c) 30%,var(--rule));display:grid;gap:6px}
+.bcard b{font-family:var(--display);font-size:16px}
+.bcard span{font-size:14.5px;color:var(--muted)}
+.roles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:20px}
+.role{border:1px solid var(--rule);border-radius:14px;padding:16px;background:var(--panel);display:grid;gap:6px;align-content:start}
+.role b{font-family:var(--display);font-size:15px}
+.role span{font-size:14.5px;color:var(--muted)}
+
+/* FAQ */
+.faq{display:grid;gap:10px;max-width:820px}
+.faq details{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:4px 18px}
+.faq summary{cursor:pointer;font-weight:600;padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";font-family:var(--mono);font-size:20px;line-height:1;color:var(--muted);transition:transform .25s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding-bottom:16px;color:var(--muted)}
+
+.themebtn{flex:none;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer;display:grid;place-items:center;margin-left:6px}
+.themebtn:hover{border-color:var(--ink)}
+.themebtn svg{width:18px;height:18px}
+.themebtn .sun{display:none}
+:root[data-theme="dark"] .themebtn .sun{display:block}
+:root[data-theme="dark"] .themebtn .moon{display:none}
+footer{border-top:1px solid var(--rule);padding-block:44px 56px}
+.credit{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;justify-content:space-between}
+.credit .who{display:flex;gap:14px;align-items:center}
+.credit .av{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:var(--bg);background:var(--ink)}
+.credit .name{font-family:var(--display);font-weight:700;font-size:18px}
+.credit .role2{font-size:14px;color:var(--muted)}
+.li{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:15px;padding:10px 18px;border-radius:99px;border:1.5px solid var(--ink);color:var(--ink)}
+.li:hover{background:var(--ink);color:var(--bg)}
+.li svg{width:18px;height:18px}
+
+.reveal{}
+@supports (animation-timeline: view()){
+  .reveal{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
+}
+
+@media (max-width:920px){
+  .hero-grid,.layers,.xpanel,.crud{grid-template-columns:minmax(0,1fr)}
+  .terms,.explorer,.roles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tools,.build{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stop{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:600px){
+  body{font-size:16px}
+  section{padding-block:56px}
+  .terms,.tools,.build,.roles,.split{grid-template-columns:minmax(0,1fr)}
+  .explorer{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .xbtn .L{font-size:44px}
+  .xpanel{padding:20px}
+  .wstep{grid-template-columns:minmax(0,1fr)}
+  .road{padding-left:44px}
+  .road::before,.road::after{left:15px}
+  .stop::before{left:-44px;width:34px;height:34px;font-size:12px}
+  .link{grid-template-columns:minmax(0,1fr);gap:6px}
+  nav.top a.opt{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .url .typed{width:13ch;border-right:0}
+  .blk{border-style:solid;border-color:transparent;background:var(--bc)}
+  .btnx{color:var(--ink)}
+}
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Sections">
+  <div class="wrap">
+    <div class="logo" aria-label="MERN Stack Explained"><b style="background:var(--m)">M</b><b style="background:var(--e)">E</b><b style="background:var(--r)">R</b><b style="background:var(--n)">N</b><span>Stack Explained</span></div>
+    <div class="links">
+      <a class="l" href="#web">How the web works</a>
+      <a class="l opt" href="#layers">HTML · CSS · JS</a>
+      <a class="l" href="#mern">MERN</a>
+      <a class="l" href="#learn">What you learn</a>
+      <a class="l opt" href="#faq">FAQ</a>
+    </div>
+    <button class="themebtn" type="button" id="themebtn" aria-label="Switch light or dark theme"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Full stack web development · a simple guide</div>
+      <h1 style="margin-top:16px">Learn how websites <span class="hl">really work</span>, then build them.</h1>
+      <p class="lede">Every app you use, like Instagram, Swiggy or your bank, has a screen you see and a system behind it that you don't. The MERN stack teaches you to build both, using one language: JavaScript.</p>
+      <div class="pills">
+        <span style="--c:var(--m)">MongoDB</span><span style="--c:var(--e)">Express</span><span style="--c:var(--r)">React</span><span style="--c:var(--n)">Node.js</span>
+      </div>
+    </div>
+    <div>
+      <div class="browser" role="img" aria-label="Animation: a web address is typed, the page loads, HTML boxes appear, CSS colours them, and JavaScript makes the button active.">
+        <div class="bbar"><i></i><i></i><i></i><div class="url"><span aria-hidden="true">🔒</span><span class="typed">myshop.com</span></div></div>
+        <div class="loadbar"></div>
+        <div class="bpage">
+          <div class="blk nav"></div>
+          <div class="blk hero2"></div>
+          <div class="brow"><div class="blk card"></div><div class="blk card"></div><div class="blk card"></div></div>
+          <div class="blk btnx">Add to cart</div>
+          <div class="stage"><span>HTML</span><span>CSS</span><span>JS</span></div>
+        </div>
+      </div>
+      <p class="hero-cap">Type an address → the page arrives → HTML builds it → CSS styles it → JavaScript brings it to life.</p>
+    </div>
+  </div>
+</header>
+
+<section id="web">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Step 1 · The basics</div>
+      <h2>What happens when you open a website?</h2>
+      <p class="lede">It feels instant, but a lot happens in less than a second. Press play to follow the journey from your screen to a server and back.</p>
+    </div>
+    <div class="web">
+      <div class="web-scroll">
+        <svg viewBox="0 0 860 220" aria-hidden="true">
+          <path class="wire" d="M120 110 H250"/><path class="wire" d="M370 110 H490"/><path class="wire" d="M610 110 H730"/>
+          <path class="wire" d="M310 70 V40 H180 V70"/>
+          <g id="n0"><rect class="node" x="20" y="70" width="110" height="80" rx="14"/><text class="nlabel" x="75" y="106" text-anchor="middle">You</text><text class="nsub" x="75" y="126" text-anchor="middle">browser</text></g>
+          <g id="n1"><rect class="node" x="250" y="70" width="120" height="80" rx="14"/><text class="nlabel" x="310" y="106" text-anchor="middle">Internet</text><text class="nsub" x="310" y="126" text-anchor="middle">+ DNS lookup</text></g>
+          <g id="n2"><rect class="node" x="490" y="70" width="120" height="80" rx="14"/><text class="nlabel" x="550" y="106" text-anchor="middle">Server</text><text class="nsub" x="550" y="126" text-anchor="middle">Node + Express</text></g>
+          <g id="n3"><rect class="node" x="730" y="70" width="110" height="80" rx="14"/><text class="nlabel" x="785" y="106" text-anchor="middle">Database</text><text class="nsub" x="785" y="126" text-anchor="middle">MongoDB</text></g>
+          <text class="nsub" x="245" y="30">phonebook: name → IP address</text>
+          <g id="packet"><rect x="-26" y="-14" width="52" height="28" rx="8" fill="var(--hi)"/><text id="ptext" x="0" y="5" text-anchor="middle" style="font-family:var(--mono);font-size:11px;font-weight:600;fill:#141625">GET</text></g>
+        </svg>
+      </div>
+      <div class="wstep" aria-live="polite">
+        <div><span class="eyebrow" id="wn">Step 1 of 7</span><h3 id="wt" style="margin-top:6px"></h3><p id="wb"></p><div class="wcode" id="wc"></div></div>
+        <div class="ctrl"><button class="btn ghost" type="button" id="wprev" aria-label="Previous step">←</button><button class="btn" type="button" id="wplay">Play</button><button class="btn ghost" type="button" id="wnext" aria-label="Next step">→</button></div>
+      </div>
+      <div class="dots" id="wdots" aria-label="Jump to step"></div>
+    </div>
+
+    <div class="terms">
+      <div class="term reveal"><b>Client</b><span>Your browser or phone app. It asks for things.</span></div>
+      <div class="term reveal"><b>Server</b><span>A computer that is always on. It answers requests.</span></div>
+      <div class="term reveal"><b>HTTP request</b><span>A message like “please give me the products page”.</span></div>
+      <div class="term reveal"><b>Response</b><span>The answer: a page or data, plus a status like <code>200 OK</code> or <code>404</code>.</span></div>
+      <div class="term reveal"><b>API</b><span>A set of web addresses the frontend can call to get or save data.</span></div>
+      <div class="term reveal"><b>JSON</b><span>A simple text format for data: <code>{"name":"Shoe"}</code>.</span></div>
+      <div class="term reveal"><b>Database</b><span>Where data is stored safely, so it is still there tomorrow.</span></div>
+      <div class="term reveal"><b>Deployment</b><span>Putting your app on a server so anyone can use it.</span></div>
+    </div>
+
+    <div class="split reveal">
+      <div class="fe"><span class="who" style="color:var(--r)">FRONTEND · client side</span><h3>What users see and touch</h3><ul><li>Pages, buttons, forms, menus</li><li>Works on phones and laptops</li><li>Runs inside the browser</li><li>Built with HTML, CSS, JavaScript and <b>React</b></li></ul></div>
+      <div class="be"><span class="who" style="color:var(--m)">BACKEND · server side</span><h3>What runs behind the screen</h3><ul><li>Login, payments, rules and checks</li><li>Saving and finding data</li><li>Runs on a server in the cloud</li><li>Built with <b>Node.js</b>, <b>Express</b> and <b>MongoDB</b></li></ul></div>
+    </div>
+    <p class="lede reveal" style="margin-top:18px;font-size:16px">A <b style="color:var(--ink)">full stack developer</b> can build both sides. That is what the MERN stack makes you.</p>
+  </div>
+</section>
+
+<section id="layers">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Step 2 · The building blocks</div>
+      <h2>Every web page has three layers</h2>
+      <p class="lede">Before React, you learn the three languages every browser understands. Switch the layers on one by one and watch the same card change.</p>
+    </div>
+    <div class="layers">
+      <div>
+        <div class="lbtns" role="group" aria-label="Choose layer">
+          <button type="button" data-k="html" style="--c:var(--hot)"><i></i>HTML only</button>
+          <button type="button" data-k="css" style="--c:var(--r)"><i></i>+ CSS</button>
+          <button type="button" data-k="js" style="--c:var(--hi)"><i></i>+ JavaScript</button>
+        </div>
+        <div class="lexplain" id="lexplain"></div>
+      </div>
+      <div class="demo" id="demo">
+        <div>
+          <div class="pcard">
+            <div class="img"><button class="heart" type="button" id="heart" aria-label="Save to wishlist">♥</button></div>
+            <h4>Running Shoes</h4>
+            <p>Light, soft and made for daily runs.</p>
+            <div class="row"><span class="price">₹2,499</span> <button type="button" id="addbtn">Add to cart</button></div>
+          </div>
+          <div class="cartmsg" id="cartmsg" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="mern">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Step 3 · The stack</div>
+      <h2>MERN, one letter at a time</h2>
+      <p class="lede">MERN is four tools that work together to make a complete web app. Tap a letter to see what it does, what you will learn, and what its code looks like.</p>
+    </div>
+    <div class="explorer" role="tablist" aria-label="MERN parts" id="xtabs"></div>
+    <div id="xpanel" role="tabpanel"></div>
+
+    <div class="sec-head reveal" style="margin:64px 0 24px">
+      <h3 style="font-size:26px">How the four parts talk to each other</h3>
+      <p class="lede" style="font-size:16px">React runs in the browser. Express runs on Node.js on the server. MongoDB keeps the data. They pass messages in JSON, so everything speaks JavaScript.</p>
+    </div>
+    <div class="together reveal">
+      <div class="tg-scroll">
+        <svg viewBox="0 0 900 260" role="img" aria-label="React in the browser sends HTTP requests with JSON to Express running on Node.js. Express uses Mongoose to read and write MongoDB, then sends JSON back to React.">
+          <rect class="zone" x="14" y="20" width="250" height="220" rx="18"/><text class="zt" x="34" y="44">BROWSER</text>
+          <rect class="zone" x="330" y="20" width="300" height="220" rx="18"/><text class="zt" x="350" y="44">SERVER</text>
+          <rect class="zone" x="696" y="20" width="190" height="220" rx="18"/><text class="zt" x="716" y="44">CLOUD DATABASE</text>
+          <rect class="tbox" x="40" y="80" width="200" height="110" rx="14" style="stroke:var(--r)"/>
+          <text class="tl" x="60" y="118">React</text><text class="ts" x="60" y="140">components · state</text><text class="ts" x="60" y="158">Axios / fetch</text>
+          <rect class="tbox" x="356" y="62" width="250" height="78" rx="14" style="stroke:var(--e)"/>
+          <text class="tl" x="376" y="96">Express</text><text class="ts" x="376" y="118">routes · middleware · JWT</text>
+          <rect class="tbox" x="356" y="150" width="250" height="62" rx="14" style="stroke:var(--n)"/>
+          <text class="tl" x="376" y="180">Node.js</text><text class="ts" x="376" y="198">runs the server code</text>
+          <rect class="tbox" x="720" y="80" width="146" height="110" rx="14" style="stroke:var(--m)"/>
+          <text class="tl" x="738" y="118">MongoDB</text><text class="ts" x="738" y="140">collections</text><text class="ts" x="738" y="158">documents</text>
+          <path class="flow" stroke="var(--hot)" d="M240 112 H356"/>
+          <path class="flow back" stroke="var(--r)" d="M240 150 H356"/>
+          <path class="flow" stroke="var(--hot)" d="M606 100 H720"/>
+          <path class="flow back" stroke="var(--m)" d="M606 150 H720"/>
+          <text class="ts" x="252" y="102">request</text><text class="ts" x="250" y="170">JSON reply</text>
+          <text class="ts" x="618" y="90">Mongoose</text><text class="ts" x="618" y="170">data</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="crud">
+      <div>
+        <h3 style="font-size:22px;margin-bottom:6px">Almost every app does four things</h3>
+        <p style="color:var(--muted);margin-bottom:16px;font-size:15.5px">They are called <b style="color:var(--ink)">CRUD</b>: Create, Read, Update, Delete. Pick one to see how it moves through MERN.</p>
+        <div class="cbtns" id="cbtns"></div>
+      </div>
+      <div class="chain" id="chain" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section id="learn">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Step 4 · Your learning road</div>
+      <h2>What you will learn, in order</h2>
+      <p class="lede">Each stage builds on the one before. You start with plain web pages and finish with a full app running on the internet.</p>
+    </div>
+    <div class="road" id="road"></div>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Your toolbox</div>
+      <h2>Tools real developers use every day</h2>
+      <p class="lede">You will not just learn languages. You will use the same tools that teams in companies use.</p>
+    </div>
+    <div class="tools" id="toolgrid"></div>
+
+    <div class="sec-head reveal" style="margin:64px 0 0">
+      <h3 style="font-size:26px">What you can build with MERN</h3>
+    </div>
+    <div class="build">
+      <div class="bcard reveal" style="--c:var(--r)"><b>Online stores</b><span>Product lists, filters, cart and orders.</span></div>
+      <div class="bcard reveal" style="--c:var(--m)"><b>Social apps</b><span>Profiles, posts, likes and comments.</span></div>
+      <div class="bcard reveal" style="--c:var(--hi)"><b>Chat apps</b><span>Live messages with Socket.io.</span></div>
+      <div class="bcard reveal" style="--c:var(--hot)"><b>Dashboards</b><span>Charts and reports from live data.</span></div>
+      <div class="bcard reveal" style="--c:var(--n)"><b>Booking systems</b><span>Slots, tickets, appointments.</span></div>
+      <div class="bcard reveal" style="--c:var(--e)"><b>Portals</b><span>Jobs, schools, results, with logins for different users.</span></div>
+    </div>
+
+    <div class="sec-head reveal" style="margin:64px 0 0">
+      <h3 style="font-size:26px">Job roles this prepares you for</h3>
+    </div>
+    <div class="roles">
+      <div class="role reveal"><b>Frontend Developer</b><span>Builds screens with React, HTML and CSS.</span></div>
+      <div class="role reveal"><b>Backend Developer</b><span>Builds APIs and databases with Node, Express and MongoDB.</span></div>
+      <div class="role reveal"><b>Full Stack Developer</b><span>Builds and connects both sides.</span></div>
+      <div class="role reveal"><b>MERN Stack Developer</b><span>A common job title for exactly these four tools.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Questions</div>
+      <h2>Common questions</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Do I need to know coding before I start?</summary><p>No. You start from HTML and CSS, then learn JavaScript step by step. If you can use a computer and are ready to practise, you can learn this.</p></details>
+      <details><summary>Why learn MERN and not something else?</summary><p>MERN uses one language, JavaScript, for everything. You learn it once and use it on the screen, on the server and with the database. React, Node.js and MongoDB are also very widely used by companies.</p></details>
+      <details><summary>What is the difference between React and JavaScript?</summary><p>JavaScript is the language. React is a library written in JavaScript that makes it much easier to build big, fast user interfaces from small reusable pieces.</p></details>
+      <details><summary>What is the difference between Node.js and Express?</summary><p>Node.js lets JavaScript run on a server. Express is a small framework on top of Node.js that makes it easy to create routes and APIs.</p></details>
+      <details><summary>Do I need a powerful laptop?</summary><p>No. A normal laptop with a browser, VS Code and Node.js installed is enough. The database can run free in the cloud on MongoDB Atlas.</p></details>
+      <details><summary>Will I put my work online?</summary><p>Yes. You will learn to push code to GitHub and deploy apps so anyone can open them with a link. This becomes your portfolio.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap credit">
+    <div class="who"><span class="av" aria-hidden="true">SP</span><div><div class="name">Samarth Porwal</div></div></div>
+    <a class="li" href="https://www.linkedin.com/in/samarth-porwal-5564111b9/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 10v7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Connect on LinkedIn</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- how the web works ---------- */
+const W=[
+ {t:'You type a web address',b:'You type a name like myshop.com into the browser and press Enter. Computers do not understand names, so the browser needs a number first.',c:'https://myshop.com',at:[75,110],n:0,p:'URL'},
+ {t:'DNS finds the server',b:'The browser asks DNS, the phonebook of the internet: “what is the address of myshop.com?” It answers with an IP address, a number for the server.',c:'myshop.com  →  142.250.67.14',at:[310,110],n:1,p:'DNS'},
+ {t:'The browser sends a request',b:'Now the browser sends an HTTP request across the internet to that server, asking for the page it needs.',c:'GET /products  HTTP/1.1',at:[430,110],n:1,p:'GET'},
+ {t:'The server runs code',b:'The server (Node.js + Express) receives the request and decides what to do. To show products, it needs data, so it asks the database.',c:'app.get("/products", ...)',at:[550,110],n:2,p:'code'},
+ {t:'The database finds the data',b:'MongoDB looks up the products and hands them back to the server.',c:'db.products.find()',at:[785,110],n:3,p:'find'},
+ {t:'The server sends a response',b:'The server sends the answer back: the data (in JSON) or a page, plus a status code. 200 means OK. 404 means not found.',c:'200 OK   [{"name":"Shoe","price":2499}, ...]',at:[310,110],n:1,p:'200'},
+ {t:'The browser draws the page',b:'The browser reads HTML for structure, CSS for style and JavaScript for actions, and shows you the finished page. All of this takes less than a second.',c:'HTML + CSS + JS  →  page on screen',at:[75,110],n:0,p:'page'}
+];
+let wi=0,wp=false,wt=null;
+const wd=$('wdots');wd.innerHTML=W.map((_,i)=>`<button type="button" aria-label="Step ${i+1}">${i+1}</button>`).join('');
+wd.querySelectorAll('button').forEach((b,i)=>b.addEventListener('click',()=>{wstop();wshow(i);}));
+function wshow(i){wi=i;const s=W[i];
+  $('wn').textContent=`Step ${i+1} of ${W.length}`;$('wt').textContent=s.t;$('wb').textContent=s.b;$('wc').textContent=s.c;
+  $('packet').setAttribute('transform',`translate(${s.at[0]},${s.at[1]+ (s.n===0||s.n===3?-58:-52)})`);$('ptext').textContent=s.p;
+  [0,1,2,3].forEach(k=>$('n'+k).querySelector('.node').classList.toggle('on',k===s.n));
+  wd.querySelectorAll('button').forEach((b,k)=>k===i?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current'));}
+function wstop(){wp=false;clearInterval(wt);$('wplay').textContent='Play';}
+$('wplay').addEventListener('click',()=>{if(wp)return wstop();wp=true;$('wplay').textContent='Pause';if(wi===W.length-1)wshow(0);wt=setInterval(()=>{if(wi>=W.length-1)return wstop();wshow(wi+1);},2800);});
+$('wnext').addEventListener('click',()=>{wstop();wshow((wi+1)%W.length);});
+$('wprev').addEventListener('click',()=>{wstop();wshow((wi-1+W.length)%W.length);});
+wshow(0);
+if(!reduce){let auto=true;const io=new IntersectionObserver(e=>{if(e[0].isIntersecting&&auto){auto=false;$('wplay').click();}},{threshold:.5});io.observe($('web').querySelector('.web'));}
+
+/* ---------- layers ---------- */
+const LX={
+ html:{h:'HTML gives the structure',p:'HTML (HyperText Markup Language) says what is on the page: a heading, some text, a price, a button. It is like the skeleton of a house. Without CSS it looks plain.',code:`<span class="t">&lt;div</span> <span class="a">class</span>=<span class="s">"card"</span><span class="t">&gt;</span>
+  <span class="t">&lt;h4&gt;</span>Running Shoes<span class="t">&lt;/h4&gt;</span>
+  <span class="t">&lt;p&gt;</span>Light, soft and made for daily runs.<span class="t">&lt;/p&gt;</span>
+  <span class="t">&lt;span&gt;</span>₹2,499<span class="t">&lt;/span&gt;</span>
+  <span class="t">&lt;button&gt;</span>Add to cart<span class="t">&lt;/button&gt;</span>
+<span class="t">&lt;/div&gt;</span>`},
+ css:{h:'CSS adds the style',p:'CSS (Cascading Style Sheets) decides how things look: colours, fonts, spacing, rounded corners, and how the layout changes on a phone. It is like the paint and furniture of the house.',code:`<span class="a">.card</span> {
+  border-radius: <span class="s">16px</span>;
+  padding: <span class="s">16px</span>;
+  box-shadow: <span class="s">0 18px 40px #0003</span>;
+}
+<span class="a">button</span> { background: <span class="s">black</span>; border-radius: <span class="s">99px</span>; }
+<span class="c">/* you will learn Flexbox, Grid and media queries */</span>`},
+ js:{h:'JavaScript adds the action',p:'JavaScript makes the page respond. Now the button and the heart actually work. Try them! JavaScript is like the electricity in the house: lights turn on when you press a switch.',code:`<span class="a">button</span>.addEventListener(<span class="s">"click"</span>, () => {
+  count = count + 1;
+  message.textContent = <span class="s">\`\${count} item(s) in cart\`</span>;
+});
+<span class="c">// React is built on top of this idea</span>`}
+};
+let lk='html',cart=0;
+const demo=$('demo');
+document.querySelectorAll('.lbtns button').forEach(b=>b.addEventListener('click',()=>lset(b.dataset.k)));
+function lset(k){lk=k;document.querySelectorAll('.lbtns button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  demo.classList.toggle('css',k!=='html');
+  const x=LX[k];$('lexplain').innerHTML=`<h3 style="font-size:22px">${x.h}</h3><p>${x.p}</p><pre class="code">${x.code}</pre>`;
+  $('cartmsg').textContent=k==='js'?(cart?`${cart} item(s) in cart`:'Click the button or the heart'):(k==='html'?'':'Looks good, but the buttons do nothing yet.');}
+$('addbtn').addEventListener('click',()=>{if(lk!=='js')return;cart++;$('cartmsg').textContent=`${cart} item(s) in cart ✓`;});
+$('heart').addEventListener('click',e=>{if(lk!=='js')return;e.currentTarget.classList.toggle('on');$('cartmsg').textContent=e.currentTarget.classList.contains('on')?'Saved to wishlist ♥':'Removed from wishlist';});
+lset('html');
+
+/* ---------- MERN explorer ---------- */
+const X=[
+ {L:'M',c:'--m',name:'MongoDB',tag:'The database',
+  what:'MongoDB stores your app’s data, like users, products and orders. It saves each item as a “document” that looks just like a JavaScript object, so it is easy to work with.',
+  analogy:'<b>Think of a library.</b> A collection is a shelf (all users). A document is one book on that shelf (one user).',
+  learn:[['Collections & documents','How data is grouped and stored.'],['CRUD operations','Insert, find, update and delete data.'],['Mongoose','Schemas and rules so your data stays clean.'],['Relationships','Linking a user to their orders.'],['Aggregation','Count, group and total data for reports.'],['Indexes','Make searches fast, even with lots of data.'],['MongoDB Atlas','A free cloud database you can use from anywhere.']],
+  code:`{
+  <span class="a">"_id"</span>: <span class="s">"64f1c2..."</span>,
+  <span class="a">"name"</span>: <span class="s">"Aarav"</span>,
+  <span class="a">"email"</span>: <span class="s">"aarav@mail.com"</span>,
+  <span class="a">"orders"</span>: [<span class="s">"Shoes"</span>, <span class="s">"Bag"</span>]
+}`,facts:['NoSQL','stores JSON-like data','flexible schema']},
+ {L:'E',c:'--e',name:'Express.js',tag:'The web framework',
+  what:'Express runs on Node.js and handles requests. It decides which code runs for each web address, checks if the user is allowed, and sends back a response.',
+  analogy:'<b>Think of a receptionist.</b> Every visitor (request) is greeted, checked, and sent to the right room (route).',
+  learn:[['Routing','Different code for /login, /products, /orders.'],['Middleware','Checks that run before your code, like “is this user logged in?”'],['REST APIs','A clean way to design your app’s web addresses.'],['Controllers','Keep your code neat and organised.'],['JWT authentication','Safe login with tokens; bcrypt to hide passwords.'],['File uploads','Accept images and documents with Multer.'],['Error handling & security','Helmet, CORS and rate limiting.']],
+  code:`<span class="c">// when someone asks for products...</span>
+app.get(<span class="s">"/api/products"</span>, async (req, res) => {
+  const products = await Product.find();
+  res.json(products);  <span class="c">// ...send them back</span>
+});`,facts:['minimal','runs on Node.js','builds APIs']},
+ {L:'R',c:'--r',name:'React',tag:'The user interface',
+  what:'React builds what users see. You make small pieces called components (a button, a card, a navbar) and join them into full pages. When data changes, React updates the screen instantly, without reloading.',
+  analogy:'<b>Think of LEGO.</b> Small blocks (components) snap together to build a big model (your app). Reuse a block anywhere.',
+  learn:[['JSX & components','Write HTML-like code inside JavaScript.'],['Props & state','Pass data in, and remember data that changes.'],['Hooks','useState, useEffect, useContext and more.'],['React Router','Move between pages without a reload.'],['Forms','Take user input and check it.'],['Calling APIs','Get data from your Express server with Axios.'],['Redux Toolkit','Share data like the cart or login across the app.'],['Tailwind CSS','Style quickly with ready-made classes.']],
+  code:`function ProductCard({ name, price }) {
+  const [liked, setLiked] = useState(false);
+  return (
+    <span class="t">&lt;div&gt;</span>
+      <span class="t">&lt;h4&gt;</span>{name} – ₹{price}<span class="t">&lt;/h4&gt;</span>
+      <span class="t">&lt;button</span> <span class="a">onClick</span>={() => setLiked(!liked)}<span class="t">&gt;</span>
+        {liked ? <span class="s">"♥"</span> : <span class="s">"♡"</span>}
+      <span class="t">&lt;/button&gt;</span>
+    <span class="t">&lt;/div&gt;</span>
+  );
+}`,facts:['made by Meta','component based','single page apps']},
+ {L:'N',c:'--n',name:'Node.js',tag:'The server runtime',
+  what:'Normally JavaScript runs only in the browser. Node.js lets it run on a server too. It can handle many users at the same time and gives you npm, a huge store of free code packages.',
+  analogy:'<b>Think of a kitchen.</b> Orders come in, the kitchen works on many of them at once, and food goes out.',
+  learn:[['How Node runs JavaScript','The runtime and the event loop, explained simply.'],['Modules','Split code into files and import them.'],['npm','Install packages like Express in one command.'],['Async code','Promises and async/await so nothing blocks.'],['Environment variables','Keep passwords and keys out of your code.'],['File system & paths','Read and write files on the server.']],
+  code:`<span class="c">// install a package</span>
+npm install express
+
+<span class="c">// start a tiny server</span>
+const express = require(<span class="s">"express"</span>);
+const app = express();
+app.listen(<span class="s">5000</span>, () => console.log(<span class="s">"Server running"</span>));`,facts:['JavaScript on the server','fast','npm packages']}
+];
+const xt=$('xtabs');
+xt.innerHTML=X.map((x,i)=>`<button class="xbtn" type="button" role="tab" id="xt${i}" style="--c:var(${x.c})"><span class="L">${x.L}</span><b>${x.name}</b><span>${x.tag}</span></button>`).join('');
+xt.querySelectorAll('button').forEach((b,i)=>{b.addEventListener('click',()=>xsel(i));b.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const j=(i+(e.key==='ArrowRight'?1:3))%4;xsel(j);xt.children[j].focus();}});});
+function xsel(i){const x=X[i];
+  xt.querySelectorAll('button').forEach((b,j)=>{b.setAttribute('aria-selected',j===i);b.tabIndex=j===i?0:-1;});
+  $('xpanel').setAttribute('aria-labelledby','xt'+i);
+  $('xpanel').innerHTML=`<div class="xpanel" style="--c:var(${x.c})">
+   <div><div><span class="eyebrow">${x.L} · ${x.tag}</span><h3 style="font-size:30px;margin-top:6px">${x.name}</h3></div>
+    <p class="what">${x.what}</p><p class="analogy">${x.analogy}</p>
+    <div><h4>What you will learn</h4><ul class="learn">${x.learn.map(l=>`<li><span><b>${esc(l[0])}</b> <span>· ${esc(l[1])}</span></span></li>`).join('')}</ul></div></div>
+   <div><div><h4>What the code looks like</h4><pre class="code">${x.code}</pre></div>
+    <div><h4>Quick facts</h4><div class="facts">${x.facts.map(f=>`<span class="fact">${f}</span>`).join('')}</div></div></div>
+  </div>`;}
+xsel(0);
+
+/* ---------- CRUD ---------- */
+const C=[
+ {k:'Create',v:'POST',c:'--m',d:'Add something new, like signing up.',steps:[['React','A user fills the sign-up form and clicks “Create account”.','axios.post("/api/users", form)'],['Express','The route receives the data and checks it.','app.post("/api/users", createUser)'],['MongoDB','A new user document is saved.','User.create({ name, email })'],['Reply','The server says it worked.','201 Created']]},
+ {k:'Read',v:'GET',c:'--r',d:'Show data, like a list of products.',steps:[['React','The products page opens and asks for data.','axios.get("/api/products")'],['Express','The route finds the right code.','app.get("/api/products", listProducts)'],['MongoDB','All products are found.','Product.find()'],['Reply','The list comes back as JSON.','200 OK  [ {...}, {...} ]']]},
+ {k:'Update',v:'PUT',c:'--hi',d:'Change something, like editing a profile.',steps:[['React','The user edits their name and clicks Save.','axios.put("/api/users/42", changes)'],['Express','Middleware checks they are logged in.','app.put("/api/users/:id", auth, updateUser)'],['MongoDB','Only that user is changed.','User.findByIdAndUpdate(id, changes)'],['Reply','The updated user comes back.','200 OK']]},
+ {k:'Delete',v:'DELETE',c:'--hot',d:'Remove something, like a cart item.',steps:[['React','The user clicks the bin icon.','axios.delete("/api/cart/7")'],['Express','The route checks the item belongs to them.','app.delete("/api/cart/:id", auth, removeItem)'],['MongoDB','The item is removed.','CartItem.findByIdAndDelete(id)'],['Reply','Done. React removes it from the screen.','204 No Content']]}
+];
+const cb=$('cbtns');
+cb.innerHTML=C.map((c,i)=>`<button type="button" style="--c:var(${c.c})"><span class="verb">${c.v}</span><span><b>${c.k}</b><span class="d">${c.d}</span></span></button>`).join('');
+cb.querySelectorAll('button').forEach((b,i)=>b.addEventListener('click',()=>csel(i)));
+const who={React:'--r',Express:'--e',MongoDB:'--m',Reply:'--hi'};
+function csel(i){cb.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-pressed',j===i));
+  $('chain').innerHTML=C[i].steps.map((s,k)=>`${k?'<div class="arrow" aria-hidden="true">↓</div>':''}<div class="link" style="--c:var(${who[s[0]]})"><span class="who">${s[0]}</span><div><div style="font-size:15px;margin-bottom:6px">${esc(s[1])}</div><code>${esc(s[2])}</code></div></div>`).join('');}
+csel(1);
+
+/* ---------- roadmap ---------- */
+const R=[
+ {t:'Web basics: HTML5 & CSS3',c:'--hot',p:'Build web pages and make them look good on every screen size.',chips:['Semantic HTML','Forms & tables','Flexbox','CSS Grid','Media queries','CSS animations','Bootstrap','Accessibility'],can:'Build a responsive personal website and put it online.'},
+ {t:'JavaScript: the core language',c:'--hi',p:'Learn the language used across the whole MERN stack, from basics to async code.',chips:['Variables & functions','ES6+ syntax','Arrays & objects','map · filter · reduce','DOM & events','Promises','async / await','Fetch API','OOP & modules'],can:'Make interactive pages that fetch live data from other websites.'},
+ {t:'React: modern frontend',c:'--r',p:'Build fast, app-like interfaces from reusable components.',chips:['JSX','Components & props','State','Hooks','React Router','Forms','Axios','Redux Toolkit','Tailwind CSS','Performance'],can:'Build a multi-page app like a product store with a working cart.'},
+ {t:'Node.js & Express: the backend',c:'--n',p:'Write the server: create APIs, handle logins and protect data.',chips:['Node runtime','npm','Express routing','Middleware','REST API design','JWT login','bcrypt','File uploads','Postman testing','API docs'],can:'Build your own API that a frontend or mobile app can use.'},
+ {t:'Databases: MongoDB (and SQL basics)',c:'--m',p:'Store and organise data, link it together and query it fast.',chips:['MongoDB CRUD','Mongoose schemas','Validation','Relationships','Aggregation','Indexes','MySQL basics','Joins'],can:'Save real data and build reports like rank lists or sales totals.'},
+ {t:'Security & teamwork',c:'--e',p:'Keep users safe and work the way software teams do.',chips:['Google / GitHub login (OAuth)','Sessions vs tokens','CORS','Helmet','XSS & CSRF','Git branches','Pull requests','Testing with Jest'],can:'Add secure sign-in, with “forgot password” and protection against attacks.'},
+ {t:'Full stack + going live',c:'--r',p:'Join frontend and backend, add live features, and deploy to the cloud.',chips:['Connect React ↔ Express','Socket.io (real-time)','Docker','GitHub Actions (CI/CD)','Vercel','Render','MongoDB Atlas','Lighthouse'],can:'Ship a full app with a public link you can share with recruiters.'}
+];
+$('road').innerHTML=R.map((r,i)=>`<div class="stop reveal" data-n="${i+1}" style="--c:var(${r.c})">
+  <div><span class="tag">Stage ${i+1}</span><h3>${esc(r.t)}</h3><p>${esc(r.p)}</p><div class="cando"><b>After this you can</b>${esc(r.can)}</div></div>
+  <div><span class="eyebrow">Topics</span><div class="chips">${r.chips.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div></div></div>`).join('');
+
+/* ---------- tools ---------- */
+const T=[['VS','--r','VS Code','The code editor where you write everything.'],['git','--hot','Git & GitHub','Save versions of your code and share it with a team.'],['npm','--n','npm','Install ready-made code packages in seconds.'],['API','--hi','Postman','Test your APIs without building a frontend first.'],['F12','--e','Browser DevTools','Inspect pages, find bugs and check network calls.'],['db','--m','MongoDB Compass & Atlas','See and manage your data visually, locally or in the cloud.'],['🐳','--r','Docker','Pack your app so it runs the same on any machine.'],['CI','--hot','GitHub Actions','Test and deploy your code automatically.'],['▲','--e','Vercel & Render','Free hosting to put your frontend and backend online.']];
+$('toolgrid').innerHTML=T.map(t=>`<div class="tool reveal" style="--c:var(${t[1]})"><span class="ic" aria-hidden="true">${t[0]}</span><div><b>${t[2]}</b><span>${t[3]}</span></div></div>`).join('');
+const tb=document.getElementById('themebtn');
+tb.addEventListener('click',()=>{const r=document.documentElement,n=r.getAttribute('data-theme')==='dark'?'light':'dark';r.setAttribute('data-theme',n);try{localStorage.setItem('mern-theme',n)}catch(e){}});
+})();
+</script>
+
+</body>
+</html>
